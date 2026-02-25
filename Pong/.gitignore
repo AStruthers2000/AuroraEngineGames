@@ -160,4 +160,4 @@ Testing/
 
 # CMake Presets
 CMakeUserPresets.json
-**/conan_provider.cmake
+conan_provider.cmake

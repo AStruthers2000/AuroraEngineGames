@@ -13,7 +13,7 @@ class PongConan(ConanFile):
     exports_sources = "CMakeLists.txt", "src/*", "public/*"
 
     def requirements(self):
-        self.requires("aurora-engine/0.0.1")
+        self.requires("aurora-engine/0.0.2")
 
     def layout(self):
         cmake_layout(self)
