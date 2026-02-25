@@ -32,6 +32,11 @@ public:
 private:
     SDL_Color m_color;
     WallManager* m_wall_manager;
+
+    float m_min_speed = 10.f;
+    float m_max_speed = 5000.f;
+
+    void clamp_velocity();
 };
 
 

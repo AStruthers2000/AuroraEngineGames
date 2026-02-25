@@ -48,7 +48,7 @@ std::vector<WallSpecification> wall_specs
 
 std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spec)
 {
-    return std::make_unique<Wall>(world, TransformComponent(spec.position), spec.scale, wall_color, 0.975f);
+    return std::make_unique<Wall>(world, TransformComponent(spec.position), spec.scale, wall_color, 0.9f);
 }
 
 
