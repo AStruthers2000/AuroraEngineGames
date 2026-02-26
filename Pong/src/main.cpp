@@ -94,7 +94,7 @@ int main()
 
     std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
     std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get());
-    std::unique_ptr<Player> player = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color);
+    std::unique_ptr<Player> player = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager);
     player->get_transform().set_scale(player_size);
 
     // Create all walls
