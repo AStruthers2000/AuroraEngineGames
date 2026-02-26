@@ -3,6 +3,7 @@
 #include "pong/wall.h"
 #include "pong/wall_manager.h"
 #include "pong/ball.h"
+#include "pong/player.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -93,6 +94,8 @@ int main()
 
     std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
     std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get());
+    std::unique_ptr<Player> player = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color);
+    player->get_transform().set_scale(player_size);
 
     // Create all walls
     for (auto const& spec : wall_specs)
@@ -105,6 +108,7 @@ int main()
     // Add objects to world
     world->add_object(std::move(wall_manager), 0);
     world->add_object(std::move(ball), ball_update_order);
+    world->add_object(std::move(player), player_update_order);
 
     // Initialize and run application
     app.initialize(std::move(world));

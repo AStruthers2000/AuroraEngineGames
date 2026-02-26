@@ -9,7 +9,8 @@ find_package(aurora-engine CONFIG REQUIRED)
 add_executable(Pong src/main.cpp
         src/wall.cpp
         src/wall_manager.cpp
-        src/ball.cpp)
+        src/ball.cpp
+        src/player.cpp)
 
 # Include directories
 target_include_directories(Pong
