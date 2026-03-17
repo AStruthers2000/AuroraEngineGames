@@ -4,13 +4,16 @@
 
 void Player::initialize()
 {
-        AuroraEngine::Engine::get().get_input_subsystem().register_callback(
-                AuroraEngine::InputAxis(AuroraEngine::InputAxis::Axis{SDL_Scancode::SDL_SCANCODE_D, SDL_Scancode::SDL_SCANCODE_A},
-                                        AuroraEngine::InputAxis::Axis{SDL_Scancode::SDL_SCANCODE_W, SDL_Scancode::SDL_SCANCODE_S}),
-                [this](AuroraEngine::AxisState const& axis)
-                {
-                    get_transform().set_acceleration(axis.get_normalized_screen_direction() * m_acceleration_speed);
-                });
+    SDL_Scancode up = m_player_num == 1 ? SDL_Scancode::SDL_SCANCODE_W : SDL_Scancode::SDL_SCANCODE_UP;
+    SDL_Scancode down = m_player_num == 1 ? SDL_Scancode::SDL_SCANCODE_S : SDL_Scancode::SDL_SCANCODE_DOWN;
+    AuroraEngine::Engine::get().get_input_subsystem().register_callback(
+            AuroraEngine::InputAxis(/*AuroraEngine::InputAxis::Axis{SDL_Scancode::SDL_SCANCODE_D, SDL_Scancode::SDL_SCANCODE_A},*/
+                    AuroraEngine::InputAxis::Axis{SDL_Scancode::SDL_SCANCODE_UNKNOWN,
+                                                  SDL_Scancode::SDL_SCANCODE_UNKNOWN},
+                    AuroraEngine::InputAxis::Axis{up, down}),
+            [this](AuroraEngine::AxisState const &axis) {
+                get_transform().set_acceleration(axis.get_normalized_screen_direction() * m_acceleration_speed);
+            });
 }
 
 void Player::update(float delta_time)

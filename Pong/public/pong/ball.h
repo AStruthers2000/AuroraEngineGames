@@ -8,16 +8,19 @@
 #define PONG_BALL_H
 
 #include "aurora_engine_public.h"
+#include "player.h"
 
 class WallManager;
 
 class Ball : public AuroraEngine::GameObject
 {
 public:
-    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color, WallManager* wall_manager)
+    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color, WallManager* wall_manager, std::vector<Player*> players)
         : GameObject(owning_world, initial_transform)
+        , m_spawn_transform(initial_transform)
         , m_color(color)
         , m_wall_manager(wall_manager)
+        , m_players(players)
     {
         get_transform().set_scale(glm::vec2{radius * 2.f, radius * 2.f});
     }
@@ -32,11 +35,29 @@ public:
 private:
     SDL_Color m_color;
     WallManager* m_wall_manager;
+    std::vector<Player*> m_players;
 
-    float m_min_speed = 10.f;
-    float m_max_speed = 5000.f;
+    AuroraEngine::TransformComponent m_spawn_transform;
+
+    float m_min_speed = 100.f;
+    float m_max_speed = 50000.f;
+
+    // Number of CCD sub-steps per frame
+    static constexpr int k_ccd_substeps = 4;
 
     void clamp_velocity();
+    static glm::vec2 random_vector() ;
+
+    // Returns the geometry-driven outward normal (zero if no collision).
+    // Separates the ball from the overlap rect and reflects velocity.
+    // elasticity scales the reflected component.
+//    glm::vec2 resolve_collision(const SDL_FRect &overlap, float elasticity);
+//
+//    // Per-sub-step helpers
+//    void substep_wall_collision();
+//    void substep_player_collision();
+
+    void bounce(glm::vec2 const& velocity, SDL_FRect const& overlap, float elasticity);
 };
 
 

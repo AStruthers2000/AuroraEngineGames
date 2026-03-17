@@ -93,9 +93,12 @@ int main()
     std::unique_ptr<GameWorld> world = std::make_unique<GameWorld>(app);
 
     std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
-    std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get());
-    std::unique_ptr<Player> player = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager);
-    player->get_transform().set_scale(player_size);
+    std::unique_ptr<Player> player1 = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 1);
+    std::unique_ptr<Player> player2 = std::make_unique<Player>(*world, glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 2);
+    std::vector<Player*> players = {player1.get(), player2.get()};
+    std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get(), players);
+    player1->get_transform().set_scale(player_size);
+    player2->get_transform().set_scale(player_size);
 
     // Create all walls
     for (auto const& spec : wall_specs)
@@ -108,7 +111,8 @@ int main()
     // Add objects to world
     world->add_object(std::move(wall_manager), 0);
     world->add_object(std::move(ball), ball_update_order);
-    world->add_object(std::move(player), player_update_order);
+    world->add_object(std::move(player1), player_update_order);
+    world->add_object(std::move(player2), player_update_order);
 
     // Initialize and run application
     app.initialize(std::move(world));
