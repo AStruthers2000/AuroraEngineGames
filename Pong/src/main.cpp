@@ -4,6 +4,7 @@
 #include "pong/wall_manager.h"
 #include "pong/ball.h"
 #include "pong/player.h"
+#include "pong/field.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -18,8 +19,8 @@ using namespace AuroraEngine;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 constexpr WindowSpecification window_spec
 {
-        .window_size = {1920, 1080},
-        .logical_size = {1920, 1080},
+        .window_size = {1628, 1074},
+        .logical_size = {1628, 1074},
         .title = "Pong",
 };
 
@@ -29,7 +30,7 @@ constexpr glm::vec2 mid_screen = window_spec.window_size / 2.f;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Wall info
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-constexpr SDL_Color wall_color{240, 243, 245, 255};
+constexpr SDL_Color wall_color{25, 83, 95, 255};
 constexpr float wall_thickness = 25.f;
 constexpr int wall_update_order = 0;
 
@@ -56,7 +57,7 @@ std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spe
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Ball info
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-constexpr SDL_Color ball_color{25, 83, 95, 255};
+constexpr SDL_Color ball_color{11, 122, 117, 255};
 constexpr float ball_radius = 10.f;
 constexpr int ball_update_order = 1;
 
@@ -67,6 +68,14 @@ constexpr int ball_update_order = 1;
 constexpr SDL_Color player_color{215, 201, 170, 255};
 constexpr glm::vec2 player_size{25.f, 100.f};
 constexpr int player_update_order = 1;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Field info
+////////////////////////////////////////////////////////////////////////////////////////////////////
+constexpr glm::vec2 field_position{25.f, 25.f};
+constexpr glm::vec2 field_size{1578.f, 1024.f};
+constexpr int field_update_order = -1;  // render behind everything
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,6 +102,7 @@ int main()
     std::unique_ptr<GameWorld> world = std::make_unique<GameWorld>(app);
 
     std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
+    std::unique_ptr<Field> field = std::make_unique<Field>(*world, TransformComponent(field_position), field_size, "data/soccer_field.png");
     std::unique_ptr<Player> player1 = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 1);
     std::unique_ptr<Player> player2 = std::make_unique<Player>(*world, glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 2);
     std::vector<Player*> players = {player1.get(), player2.get()};
@@ -109,6 +119,7 @@ int main()
     }
 
     // Add objects to world
+    world->add_object(std::move(field), field_update_order);
     world->add_object(std::move(wall_manager), 0);
     world->add_object(std::move(ball), ball_update_order);
     world->add_object(std::move(player1), player_update_order);

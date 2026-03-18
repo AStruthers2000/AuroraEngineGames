@@ -10,7 +10,8 @@ add_executable(Pong src/main.cpp
         src/wall.cpp
         src/wall_manager.cpp
         src/ball.cpp
-        src/player.cpp)
+        src/player.cpp
+        src/field.cpp)
 
 # Include directories
 target_include_directories(Pong
