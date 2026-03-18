@@ -1,0 +1,1 @@
+#include "pong/better_game_object.h"

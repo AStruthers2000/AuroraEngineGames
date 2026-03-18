@@ -7,15 +7,15 @@
 #ifndef PONG_PLAYER_H
 #define PONG_PLAYER_H
 
-#include "aurora_engine_public.h"
+#include "better_game_object.h"
 
 class WallManager;
 
-class Player : public AuroraEngine::GameObject
+class Player : public BetterGameObject
 {
 public:
     Player(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, SDL_Color const& color, WallManager& wall_manager, int player_num)
-        : GameObject(owning_world, initial_transform)
+        : BetterGameObject(owning_world, initial_transform)
         , m_color(color)
         , m_wall_manager(wall_manager)
         , m_player_num(player_num)

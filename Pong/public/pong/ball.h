@@ -7,20 +7,22 @@
 #ifndef PONG_BALL_H
 #define PONG_BALL_H
 
-#include "aurora_engine_public.h"
+#include <utility>
+
+#include "better_game_object.h"
 #include "player.h"
 
 class WallManager;
 
-class Ball : public AuroraEngine::GameObject
+class Ball : public BetterGameObject
 {
 public:
     Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color, WallManager* wall_manager, std::vector<Player*> players)
-        : GameObject(owning_world, initial_transform)
+        : BetterGameObject(owning_world, initial_transform)
         , m_spawn_transform(initial_transform)
         , m_color(color)
         , m_wall_manager(wall_manager)
-        , m_players(players)
+        , m_players(std::move(players))
     {
         get_transform().set_scale(glm::vec2{radius * 2.f, radius * 2.f});
     }

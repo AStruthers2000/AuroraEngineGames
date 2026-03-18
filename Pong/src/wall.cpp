@@ -21,6 +21,10 @@ void Wall::render(SDL_Renderer *renderer)
 
     SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
     SDL_RenderFillRect(renderer, &dst);
+
+    SDL_FRect collider = get_collider();
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_RenderRect(renderer, &collider);
 }
 
 void Wall::cleanup()

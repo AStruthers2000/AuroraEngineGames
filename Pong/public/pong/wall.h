@@ -7,13 +7,13 @@
 #ifndef PONG_WALL_H
 #define PONG_WALL_H
 
-#include "aurora_engine_public.h"
+#include "better_game_object.h"
 
-class Wall : public AuroraEngine::GameObject
+class Wall : public BetterGameObject
 {
 public:
     Wall(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, glm::vec2 const& scale, SDL_Color const& color, float elasticity = 1.f)
-        : GameObject(owning_world, initial_transform)
+        : BetterGameObject(owning_world, initial_transform)
         , m_color(color)
         , m_elasticity(elasticity)
     {
