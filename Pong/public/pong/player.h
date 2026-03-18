@@ -15,7 +15,7 @@ class Player : public BetterGameObject
 {
 public:
     Player(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, SDL_Color const& color, WallManager& wall_manager, int player_num)
-        : BetterGameObject(owning_world, initial_transform)
+        : BetterGameObject(owning_world, initial_transform, true)
         , m_color(color)
         , m_wall_manager(wall_manager)
         , m_player_num(player_num)

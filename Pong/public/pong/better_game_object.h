@@ -13,9 +13,9 @@
 class BetterGameObject : public AuroraEngine::GameObject
 {
 public:
-    BetterGameObject(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform)
+    BetterGameObject(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, bool is_dynamic_object = false)
         : GameObject(owning_world, initial_transform)
-        , m_collider(std::make_unique<Collider>(this))
+        , m_collider(std::make_unique<Collider>(this, is_dynamic_object))
     {
     }
 

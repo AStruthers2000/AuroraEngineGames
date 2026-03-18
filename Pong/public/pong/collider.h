@@ -17,8 +17,9 @@ public:
     {
     }
 
-    explicit Collider(AuroraEngine::GameObject* owner)
+    Collider(AuroraEngine::GameObject* owner, bool is_dynamic)
         : m_owner(owner)
+        , m_is_dynamic(is_dynamic)
     {
     }
 
@@ -38,8 +39,11 @@ public:
         return extents;
     }
 
+    [[nodiscard]] bool is_dynamic() const { return m_is_dynamic; }
+
 private:
     AuroraEngine::GameObject* m_owner;
+    bool m_is_dynamic;
 };
 
 #endif //PONG_COLLIDER_H
