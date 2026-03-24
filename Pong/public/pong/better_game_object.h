@@ -36,6 +36,22 @@ public:
         return collider;
     }
 
+    [[nodiscard]] bool is_dynamic() const
+    {
+        return m_collider->is_dynamic();
+    }
+
+    void collision_response(AuroraEngine::TransformComponent const& my_transform, BetterGameObject* other_object, ECollisionDirection direction)
+    {
+        m_collider->collision_response(my_transform, other_object, direction);
+    }
+
+protected:
+    void register_collision_response(CollisionCallback&& collision_response)
+    {
+        m_collider->register_collision_response(std::move(collision_response));
+    }
+
 private:
     std::unique_ptr<Collider> m_collider;
 };

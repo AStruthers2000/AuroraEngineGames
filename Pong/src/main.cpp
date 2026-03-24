@@ -5,6 +5,7 @@
 #include "pong/ball.h"
 #include "pong/player.h"
 #include "pong/field.h"
+#include "pong/game_mode.h"
 
 #include <glm/gtc/random.hpp>
 
@@ -32,26 +33,53 @@ constexpr glm::vec2 mid_screen = window_spec.window_size / 2.f;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 constexpr SDL_Color wall_color{25, 83, 95, 255};
 constexpr float wall_thickness = 25.f;
+constexpr float wall_elasticity = 0.9f;
 constexpr int wall_update_order = 0;
-
-struct WallSpecification
-{
-    glm::vec2 position;
-    glm::vec2 scale;
-};
 
 std::vector<WallSpecification> wall_specs
 {
-        { .position = {0.f, 0.f}, .scale = {window_spec.window_size.x, wall_thickness} },
-        { .position = {0.f, window_spec.window_size.y - wall_thickness}, .scale = {window_spec.window_size.x, wall_thickness} },
-        { .position = {0.f, 0.f}, .scale = {wall_thickness, window_spec.window_size.y} },
-        { .position = {window_spec.window_size.x - wall_thickness, 0.f}, .scale = {wall_thickness, window_spec.window_size.y} },
+    {
+        .position = {0.f, 0.f},
+        .scale = {window_spec.window_size.x, wall_thickness},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // top wall
+    {
+        .position = {0.f, window_spec.window_size.y - wall_thickness},
+        .scale = {window_spec.window_size.x, wall_thickness},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // bottom wall
+    {
+        .position = {0.f, 0.f},
+        .scale = {wall_thickness, 235.f},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // top-left wall
+    {
+        .position = {0.f, window_spec.window_size.y - 233.f},
+        .scale = {wall_thickness, 233.f},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // bottom-left wall
+    {
+        .position = {window_spec.window_size.x - wall_thickness, 0.f},
+        .scale = {wall_thickness, 235.f},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // top-right wall
+    {
+        .position = {window_spec.window_size.x - wall_thickness, window_spec.window_size.y - 233.f},
+        .scale = {wall_thickness, 233.f},
+        .color = wall_color,
+        .elasticity = wall_elasticity,
+    }, // bottom-right wall
 };
 
-std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spec)
-{
-    return std::make_unique<Wall>(world, TransformComponent(spec.position), spec.scale, wall_color, 0.9f);
-}
+//std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spec)
+//{
+//    return std::make_unique<Wall>(world, TransformComponent(spec.position), spec.scale, wall_color, 0.9f);
+//}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +88,13 @@ std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spe
 constexpr SDL_Color ball_color{11, 122, 117, 255};
 constexpr float ball_radius = 10.f;
 constexpr int ball_update_order = 1;
+
+BallSpecification ball_specs
+{
+    .position = mid_screen,
+    .radius = ball_radius,
+    .color = ball_color,
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,29 +136,34 @@ int main()
     Engine app(window_spec);
     std::unique_ptr<GameWorld> world = std::make_unique<GameWorld>(app);
 
-    std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
+//    std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
+    std::unique_ptr<GameMode> game_mode = std::make_unique<GameMode>(*world, TransformComponent());
     std::unique_ptr<Field> field = std::make_unique<Field>(*world, TransformComponent(field_position), field_size, "data/soccer_field.png");
-    std::unique_ptr<Player> player1 = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 1);
-    std::unique_ptr<Player> player2 = std::make_unique<Player>(*world, glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 2);
-    std::vector<Player*> players = {player1.get(), player2.get()};
-    std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get(), players);
-    player1->get_transform().set_scale(player_size);
-    player2->get_transform().set_scale(player_size);
+//    std::unique_ptr<Player> player1 = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 1);
+//    std::unique_ptr<Player> player2 = std::make_unique<Player>(*world, glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 2);
+//    std::vector<Player*> players = {player1.get(), player2.get()};
+//    std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get(), players);
+//    player1->get_transform().set_scale(player_size);
+//    player2->get_transform().set_scale(player_size);
 
     // Create all walls
     for (auto const& spec : wall_specs)
     {
-        std::unique_ptr<Wall> wall = create_wall(*world, spec);
-        wall_manager->add_wall(wall.get());
-        world->add_object(std::move(wall), wall_update_order);
+//        std::unique_ptr<Wall> wall = create_wall(*world, spec);
+//        wall_manager->add_wall(wall.get());
+//        world->add_object(std::move(wall), wall_update_order);
+        game_mode->spawn_wall(spec);
     }
+
+    game_mode->spawn_ball(ball_specs);
 
     // Add objects to world
     world->add_object(std::move(field), field_update_order);
-    world->add_object(std::move(wall_manager), 0);
-    world->add_object(std::move(ball), ball_update_order);
-    world->add_object(std::move(player1), player_update_order);
-    world->add_object(std::move(player2), player_update_order);
+    world->add_object(std::move(game_mode), 1000);
+//    world->add_object(std::move(wall_manager), 0);
+//    world->add_object(std::move(ball), ball_update_order);
+//    world->add_object(std::move(player1), player_update_order);
+//    world->add_object(std::move(player2), player_update_order);
 
     // Initialize and run application
     app.initialize(std::move(world));

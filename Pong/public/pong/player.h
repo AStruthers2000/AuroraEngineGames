@@ -39,7 +39,7 @@ private:
     float m_max_speed = 6000.f;
     float m_drag = 0.25f;
     float m_wall_impact_factor = 75.f;
-    float m_elasticity = 1.1f;
+    float m_elasticity = 1.25f;
     int m_player_num = 0;
 };
 

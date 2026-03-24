@@ -1,5 +1,6 @@
 #include "pong/ball.h"
 #include "pong/wall_manager.h"
+#include "pong/wall.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
@@ -17,10 +18,30 @@ void Ball::initialize()
                 get_transform().set_acceleration(m_spawn_transform.get_acceleration());
                 get_transform().set_velocity(random_vector());
             });
+
+    register_collision_response([this](AuroraEngine::TransformComponent const& my_transform, BetterGameObject* other_object, ECollisionDirection direction)
+    {
+        if (dynamic_cast<Wall*>(other_object))
+        {
+            printf("Ball just hit wall\n");
+            if (direction == ECollisionDirection::Up || direction == ECollisionDirection::Down)
+            {
+                get_transform().set_velocity(glm::vec2(my_transform.get_velocity().x,
+                                                       -my_transform.get_velocity().y));
+            }
+            else
+            {
+                get_transform().set_velocity(glm::vec2(-my_transform.get_velocity().x,
+                                                       my_transform.get_velocity().y));
+            }
+        }
+    });
 }
 
 void Ball::update(float delta_time)
 {
+    clamp_velocity();
+    get_transform().update_position(get_transform().get_velocity() * delta_time);
     // Split each frame into k_ccd_substeps equal sub-steps.
     // Within each sub-step:
     //   1. Advance position by (velocity * sub_dt)
@@ -29,58 +50,58 @@ void Ball::update(float delta_time)
     // This keeps penetration depths small regardless of speed, eliminating
     // tunnelling, corner-flip artefacts, and the multi-collision flip-flop.
 
-    const float sub_dt = delta_time / static_cast<float>(k_ccd_substeps);
-
-    for (int step = 0; step < k_ccd_substeps; ++step)
-    {
-        // Advance
-        get_transform().update_position(get_transform().get_velocity() * sub_dt);
-
-        // Player first so wall crush-prevention can query walls after
-
-        for (auto* player : m_players)
-        {
-            if (player)
-            {
-                SDL_FRect ball_rect{
-                        .x = get_transform().get_position().x,
-                        .y = get_transform().get_position().y,
-                        .w = get_transform().get_scale().x,
-                        .h = get_transform().get_scale().y
-                };
-
-                SDL_FRect player_rect{
-                        .x = player->get_transform().get_position().x,
-                        .y = player->get_transform().get_position().y,
-                        .w = player->get_transform().get_scale().x,
-                        .h = player->get_transform().get_scale().y,
-                };
-
-                SDL_FRect overlap;
-                if (SDL_GetRectIntersectionFloat(&ball_rect, &player_rect, &overlap))
-                {
-                    bounce(get_transform().get_velocity(), overlap, player->get_elasticity());
-                }
-            }
-        }
-
-        if (m_wall_manager)
-        {
-            SDL_FRect ball_rect{
-                .x = get_transform().get_position().x,
-                .y = get_transform().get_position().y,
-                .w = get_transform().get_scale().x,
-                .h = get_transform().get_scale().y
-            };
-
-            for (auto const &[overlap, elasticity] : m_wall_manager->get_all_overlaps(ball_rect))
-            {
-                bounce(get_transform().get_velocity(), overlap, elasticity);
-            }
-        }
-    }
-
-    clamp_velocity();
+//    const float sub_dt = delta_time / static_cast<float>(k_ccd_substeps);
+//
+//    for (int step = 0; step < k_ccd_substeps; ++step)
+//    {
+//        // Advance
+//        get_transform().update_position(get_transform().get_velocity() * sub_dt);
+//
+//        // Player first so wall crush-prevention can query walls after
+//
+//        for (auto* player : m_players)
+//        {
+//            if (player)
+//            {
+//                SDL_FRect ball_rect{
+//                        .x = get_transform().get_position().x,
+//                        .y = get_transform().get_position().y,
+//                        .w = get_transform().get_scale().x,
+//                        .h = get_transform().get_scale().y
+//                };
+//
+//                SDL_FRect player_rect{
+//                        .x = player->get_transform().get_position().x,
+//                        .y = player->get_transform().get_position().y,
+//                        .w = player->get_transform().get_scale().x,
+//                        .h = player->get_transform().get_scale().y,
+//                };
+//
+//                SDL_FRect overlap;
+//                if (SDL_GetRectIntersectionFloat(&ball_rect, &player_rect, &overlap))
+//                {
+//                    bounce(get_transform().get_velocity(), overlap, player->get_elasticity());
+//                }
+//            }
+//        }
+//
+//        if (m_wall_manager)
+//        {
+//            SDL_FRect ball_rect{
+//                .x = get_transform().get_position().x,
+//                .y = get_transform().get_position().y,
+//                .w = get_transform().get_scale().x,
+//                .h = get_transform().get_scale().y
+//            };
+//
+//            for (auto const &[overlap, elasticity] : m_wall_manager->get_all_overlaps(ball_rect))
+//            {
+//                bounce(get_transform().get_velocity(), overlap, elasticity);
+//            }
+//        }
+//    }
+//
+//    clamp_velocity();
 }
 
 void Ball::render(SDL_Renderer *renderer)
@@ -120,40 +141,41 @@ void Ball::clamp_velocity()
 glm::vec2 Ball::random_vector()
 {
     glm::vec2 random_vel = glm::circularRand(1.f) * glm::linearRand(500.f, 1000.f);
+//    glm::vec2 random_vel = glm::circularRand(1.f) * glm::linearRand(50.f, 100.f);
     return random_vel;
 }
 
-void Ball::bounce(glm::vec2 const& velocity, SDL_FRect const& overlap, float elasticity)
-{
-    if (overlap.w >= overlap.h)
-    {
-        if (velocity.y < 0.f)
-        {
-            get_transform().update_position(glm::vec2{0.f, overlap.h});
-        }
-        else
-        {
-            get_transform().update_position(glm::vec2{0.f, -overlap.h});
-        }
-
-        get_transform().set_velocity(glm::vec2{velocity.x, -velocity.y});
-    }
-    else
-    {
-        if (velocity.x < 0.f)
-        {
-            get_transform().update_position(glm::vec2{overlap.w, 0.f});
-        }
-        else
-        {
-            get_transform().update_position(glm::vec2{-overlap.w, 0.f});
-        }
-
-        get_transform().set_velocity(glm::vec2{-velocity.x, velocity.y});
-    }
-
-    get_transform().set_velocity(get_transform().get_velocity() * elasticity);
-}
+//void Ball::bounce(glm::vec2 const& velocity, SDL_FRect const& overlap, float elasticity)
+//{
+//    if (overlap.w >= overlap.h)
+//    {
+//        if (velocity.y < 0.f)
+//        {
+//            get_transform().update_position(glm::vec2{0.f, overlap.h});
+//        }
+//        else
+//        {
+//            get_transform().update_position(glm::vec2{0.f, -overlap.h});
+//        }
+//
+//        get_transform().set_velocity(glm::vec2{velocity.x, -velocity.y});
+//    }
+//    else
+//    {
+//        if (velocity.x < 0.f)
+//        {
+//            get_transform().update_position(glm::vec2{overlap.w, 0.f});
+//        }
+//        else
+//        {
+//            get_transform().update_position(glm::vec2{-overlap.w, 0.f});
+//        }
+//
+//        get_transform().set_velocity(glm::vec2{-velocity.x, velocity.y});
+//    }
+//
+//    get_transform().set_velocity(get_transform().get_velocity() * elasticity);
+//}
 
 //glm::vec2 Ball::resolve_collision(const SDL_FRect &overlap, float elasticity)
 //{

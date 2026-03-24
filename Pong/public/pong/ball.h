@@ -17,12 +17,12 @@ class WallManager;
 class Ball : public BetterGameObject
 {
 public:
-    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color, WallManager* wall_manager, std::vector<Player*> players)
+    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color/*, WallManager* wall_manager, std::vector<Player*> players*/)
         : BetterGameObject(owning_world, initial_transform, true)
         , m_spawn_transform(initial_transform)
         , m_color(color)
-        , m_wall_manager(wall_manager)
-        , m_players(std::move(players))
+//        , m_wall_manager(wall_manager)
+//        , m_players(std::move(players))
     {
         get_transform().set_scale(glm::vec2{radius * 2.f, radius * 2.f});
     }
@@ -36,8 +36,8 @@ public:
 
 private:
     SDL_Color m_color;
-    WallManager* m_wall_manager;
-    std::vector<Player*> m_players;
+//    WallManager* m_wall_manager;
+//    std::vector<Player*> m_players;
 
     AuroraEngine::TransformComponent m_spawn_transform;
 
@@ -45,7 +45,7 @@ private:
     float m_max_speed = 50000.f;
 
     // Number of CCD sub-steps per frame
-    static constexpr int k_ccd_substeps = 4;
+//    static constexpr int k_ccd_substeps = 4;
 
     void clamp_velocity();
     static glm::vec2 random_vector() ;
@@ -59,7 +59,7 @@ private:
 //    void substep_wall_collision();
 //    void substep_player_collision();
 
-    void bounce(glm::vec2 const& velocity, SDL_FRect const& overlap, float elasticity);
+//    void bounce(glm::vec2 const& velocity, SDL_FRect const& overlap, float elasticity);
 };
 
 
