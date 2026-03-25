@@ -21,9 +21,34 @@ void Ball::initialize()
 
     register_collision_response([this](AuroraEngine::TransformComponent const& my_transform, BetterGameObject* other_object, ECollisionDirection direction)
     {
+        enum class HitObject
+        {
+            Player,
+            Wall,
+            Other
+        };
+        HitObject hit = HitObject::Other;
         if (dynamic_cast<Wall*>(other_object))
         {
-            printf("Ball just hit wall\n");
+            hit = HitObject::Wall;
+        }
+        else if (dynamic_cast<Player*>(other_object))
+        {
+            hit = HitObject::Player;
+        }
+
+        if (hit == HitObject::Wall || hit == HitObject::Player)
+        {
+            float elasticity = 1.f;
+            if (hit == HitObject::Player)
+            {
+                elasticity = dynamic_cast<Player*>(other_object)->get_elasticity();
+            }
+            else
+            {
+                elasticity = dynamic_cast<Wall*>(other_object)->elasticity();
+            }
+
             if (direction == ECollisionDirection::Up || direction == ECollisionDirection::Down)
             {
                 get_transform().set_velocity(glm::vec2(my_transform.get_velocity().x,
@@ -34,6 +59,8 @@ void Ball::initialize()
                 get_transform().set_velocity(glm::vec2(-my_transform.get_velocity().x,
                                                        my_transform.get_velocity().y));
             }
+
+            get_transform().set_velocity(get_transform().get_velocity() * elasticity);
         }
     });
 }

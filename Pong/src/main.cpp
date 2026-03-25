@@ -157,6 +157,28 @@ int main()
 
     game_mode->spawn_ball(ball_specs);
 
+    PlayerSpecification player1
+    {
+        .position = glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)},
+        .size = player_size,
+        .color = player_color,
+        .player_num = 1,
+        .update_order = player_update_order,
+    };
+
+    PlayerSpecification player2
+    {
+        .position = glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)},
+        .size = player_size,
+        .color = player_color,
+        .player_num = 2,
+        .update_order = player_update_order,
+    };
+
+    game_mode->spawn_player(player1);
+    game_mode->spawn_player(player2);
+
+
     // Add objects to world
     world->add_object(std::move(field), field_update_order);
     world->add_object(std::move(game_mode), 1000);

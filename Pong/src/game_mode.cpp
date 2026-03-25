@@ -23,9 +23,12 @@ void GameMode::cleanup()
 
 }
 
-void GameMode::spawn_player()
+void GameMode::spawn_player(PlayerSpecification const& player_spec)
 {
-
+    std::unique_ptr<Player> player = std::make_unique<Player>(get_world(), player_spec.position, player_spec.color, player_spec.player_num);
+    player->get_transform().set_scale(player_spec.size);
+    m_managed_objects.push_back(player.get());
+    get_world().add_object(std::move(player), player_spec.update_order);
 }
 
 void GameMode::spawn_ball(BallSpecification const& ball_spec)
@@ -35,14 +38,14 @@ void GameMode::spawn_ball(BallSpecification const& ball_spec)
 
     std::unique_ptr<Ball> ball = std::make_unique<Ball>(get_world(), spawn_location, ball_spec.radius, ball_spec.color);
     m_managed_objects.push_back(ball.get());
-    get_world().add_object(std::move(ball), 100);
+    get_world().add_object(std::move(ball), ball_spec.update_order);
 }
 
 void GameMode::spawn_wall(const WallSpecification &wall_spec)
 {
     std::unique_ptr<Wall> wall = std::make_unique<Wall>(get_world(), AuroraEngine::TransformComponent(wall_spec.position), wall_spec.scale, wall_spec.color, wall_spec.elasticity);
     m_managed_objects.push_back(wall.get());
-    get_world().add_object(std::move(wall), 100);
+    get_world().add_object(std::move(wall), wall_spec.update_order);
 }
 
 void GameMode::resolve_all_collision()

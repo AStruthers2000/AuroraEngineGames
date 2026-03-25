@@ -10,11 +10,20 @@
 #include "aurora_engine_public.h"
 #include "better_game_object.h"
 
+struct PlayerSpecification
+{
+    glm::vec2 position;
+    glm::vec2 size;
+    SDL_Color color;
+    int player_num;
+    int update_order;
+};
 struct BallSpecification
 {
     glm::vec2 position;
     float radius;
     SDL_Color color;
+    int update_order;
 };
 
 struct WallSpecification
@@ -23,6 +32,7 @@ struct WallSpecification
     glm::vec2 scale;
     SDL_Color color;
     float elasticity;
+    int update_order;
 };
 
 class GameMode : public AuroraEngine::GameObject
@@ -40,7 +50,7 @@ public:
     void render(SDL_Renderer* renderer) override;
     void cleanup() override;
 
-    void spawn_player();
+    void spawn_player(PlayerSpecification const& player_spec);
     void spawn_ball(BallSpecification const& ball_spec);
     void spawn_wall(WallSpecification const& wall_spec);
 
