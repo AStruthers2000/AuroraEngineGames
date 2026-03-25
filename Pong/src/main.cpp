@@ -1,7 +1,6 @@
 #include "aurora_engine_public.h"
 
 #include "pong/wall.h"
-#include "pong/wall_manager.h"
 #include "pong/ball.h"
 #include "pong/player.h"
 #include "pong/field.h"
@@ -76,11 +75,6 @@ std::vector<WallSpecification> wall_specs
     }, // bottom-right wall
 };
 
-//std::unique_ptr<Wall> create_wall(GameWorld& world, WallSpecification const& spec)
-//{
-//    return std::make_unique<Wall>(world, TransformComponent(spec.position), spec.scale, wall_color, 0.9f);
-//}
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Ball info
@@ -136,22 +130,12 @@ int main()
     Engine app(window_spec);
     std::unique_ptr<GameWorld> world = std::make_unique<GameWorld>(app);
 
-//    std::unique_ptr<WallManager> wall_manager = std::make_unique<WallManager>(*world, mid_screen);
     std::unique_ptr<GameMode> game_mode = std::make_unique<GameMode>(*world, TransformComponent());
     std::unique_ptr<Field> field = std::make_unique<Field>(*world, TransformComponent(field_position), field_size, "data/soccer_field.png");
-//    std::unique_ptr<Player> player1 = std::make_unique<Player>(*world, glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 1);
-//    std::unique_ptr<Player> player2 = std::make_unique<Player>(*world, glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)}, player_color, *wall_manager, 2);
-//    std::vector<Player*> players = {player1.get(), player2.get()};
-//    std::unique_ptr<Ball> ball = std::make_unique<Ball>(*world, mid_screen, ball_radius, ball_color, wall_manager.get(), players);
-//    player1->get_transform().set_scale(player_size);
-//    player2->get_transform().set_scale(player_size);
 
     // Create all walls
     for (auto const& spec : wall_specs)
     {
-//        std::unique_ptr<Wall> wall = create_wall(*world, spec);
-//        wall_manager->add_wall(wall.get());
-//        world->add_object(std::move(wall), wall_update_order);
         game_mode->spawn_wall(spec);
     }
 
@@ -178,14 +162,9 @@ int main()
     game_mode->spawn_player(player1);
     game_mode->spawn_player(player2);
 
-
     // Add objects to world
     world->add_object(std::move(field), field_update_order);
     world->add_object(std::move(game_mode), 1000);
-//    world->add_object(std::move(wall_manager), 0);
-//    world->add_object(std::move(ball), ball_update_order);
-//    world->add_object(std::move(player1), player_update_order);
-//    world->add_object(std::move(player2), player_update_order);
 
     // Initialize and run application
     app.initialize(std::move(world));

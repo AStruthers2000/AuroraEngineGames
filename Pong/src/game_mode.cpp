@@ -95,44 +95,34 @@ void GameMode::resolve_collision(BetterGameObject* dynamic, BetterGameObject* ot
     if (abs(collision_vec.x) <= abs(collision_vec.y))
     {
         // Collision happened further away vertically, so this is a vertical collision
-//        printf("Vertical collision\n");
         if (collision_vec.y > 0)
         {
             // Collision happened above our center
-//            printf("Top edge hit\n");
             dynamic->get_transform().update_position(glm::vec2(0, overlap.h));
             direction = ECollisionDirection::Up;
         }
         else
         {
             // Collision happened below our center
-//            printf("Bottom edge hit\n");
             dynamic->get_transform().update_position(glm::vec2(0, -overlap.h));
             direction = ECollisionDirection::Down;
         }
-//        dynamic->get_transform().set_velocity(glm::vec2(dynamic->get_transform().get_velocity().x,
-//                                                        -dynamic->get_transform().get_velocity().y));
     }
     else
     {
         // Collision happened further away horizontally, so this is a horizontal collision
-//        printf("Horizontal collision\n");
         if (collision_vec.x > 0)
         {
             // Collision happened to the left of our center
-//            printf("Left edge hit\n");
             dynamic->get_transform().update_position(glm::vec2(overlap.w, 0));
             direction = ECollisionDirection::Left;
         }
         else
         {
             // Collision happened to the right of our center
-//            printf("Right edge hit\n");
             dynamic->get_transform().update_position(glm::vec2(-overlap.w, 0));
             direction = ECollisionDirection::Right;
         }
-//        dynamic->get_transform().set_velocity(glm::vec2(-dynamic->get_transform().get_velocity().x,
-//                                                        dynamic->get_transform().get_velocity().y));
     }
     dynamic->get_transform().set_velocity(glm::vec2(0));
     // Call dynamic object's collision response function with transform before hit, other object, and direction of hit

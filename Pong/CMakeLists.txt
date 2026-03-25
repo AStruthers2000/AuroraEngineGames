@@ -8,7 +8,6 @@ find_package(aurora-engine CONFIG REQUIRED)
 
 add_executable(Pong src/main.cpp
         src/wall.cpp
-        src/wall_manager.cpp
         src/ball.cpp
         src/player.cpp
         src/field.cpp

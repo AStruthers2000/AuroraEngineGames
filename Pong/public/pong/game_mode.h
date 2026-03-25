@@ -55,12 +55,6 @@ public:
     void spawn_wall(WallSpecification const& wall_spec);
 
 private:
-    struct CollisionPair
-    {
-        BetterGameObject* object;
-        SDL_FRect collider;
-    };
-
     void resolve_all_collision();
     void resolve_collision(BetterGameObject* dynamic, BetterGameObject* other, SDL_FRect const& overlap);
 
