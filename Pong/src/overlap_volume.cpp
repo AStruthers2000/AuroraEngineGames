@@ -16,7 +16,7 @@ void OverlapVolume::update(float delta_time)
 {
     for (auto const& [registrant, response] : m_registered_game_objects)
     {
-        if (check_for_overlap(registrant))
+        if (registrant && registrant->get_object_state() == EGameObjectState::Active && check_for_overlap(registrant))
         {
             response(this);
         }

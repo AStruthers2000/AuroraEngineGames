@@ -81,7 +81,7 @@ std::vector<WallSpecification> wall_specs
 /// Overlap info
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 constexpr float overlap_extra = 100.f;
-constexpr int overlap_update_order = 100;
+constexpr int overlap_update_order = -1;
 
 std::vector<OverlapSpecification> overlap_specs
 {

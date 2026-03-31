@@ -62,7 +62,10 @@ void GameMode::resolve_all_collision()
     std::unordered_map<BetterGameObject*, SDL_FRect> colliders;
     for (auto* object : m_managed_objects)
     {
-        colliders.emplace(object, object->get_collider());
+        if (object && object->get_object_state() == EGameObjectState::Active)
+        {
+            colliders.emplace(object, object->get_collider());
+        }
     }
 
     // iterate over all dynamic objects

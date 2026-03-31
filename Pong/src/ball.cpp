@@ -70,6 +70,7 @@ void Ball::initialize()
         overlap->register_collision_response(this, [this](OverlapVolume* volume)
         {
             printf("Ball has been scored!!!\n");
+            this->destroy();
         });
     }
 }
@@ -99,6 +100,7 @@ void Ball::render(SDL_Renderer *renderer)
 
 void Ball::cleanup()
 {
+    printf("Ball has been destroyed\n");
 }
 
 void Ball::clamp_velocity()
