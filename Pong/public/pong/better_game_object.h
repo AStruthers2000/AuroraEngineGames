@@ -10,11 +10,13 @@
 #include "aurora_engine_public.h"
 #include "pong/collider.h"
 
+class GameMode;
 class BetterGameObject : public AuroraEngine::GameObject
 {
 public:
-    BetterGameObject(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, bool is_dynamic_object = false)
+    BetterGameObject(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, GameMode& owning_mode, bool is_dynamic_object = false)
         : GameObject(owning_world, initial_transform)
+        , m_game_mode(owning_mode)
         , m_collider(std::make_unique<Collider>(this, is_dynamic_object))
     {
     }
@@ -26,7 +28,7 @@ public:
     void render(SDL_Renderer* renderer) override = 0;
     void cleanup() override = 0;
 
-    [[nodiscard]] SDL_FRect get_collider() const
+    SDL_FRect get_collider() const
     {
         SDL_FRect collider{};
         if (m_collider)
@@ -36,7 +38,7 @@ public:
         return collider;
     }
 
-    [[nodiscard]] bool is_dynamic() const
+    bool is_dynamic() const
     {
         return m_collider->is_dynamic();
     }
@@ -52,7 +54,10 @@ protected:
         m_collider->register_collision_response(std::move(collision_response));
     }
 
+    GameMode& get_game_mode() const { return m_game_mode; }
+
 private:
+    GameMode& m_game_mode;
     std::unique_ptr<Collider> m_collider;
 };
 

@@ -13,7 +13,8 @@ add_executable(Pong src/main.cpp
         src/field.cpp
         src/better_game_object.cpp
         src/collider.cpp
-        src/game_mode.cpp)
+        src/game_mode.cpp
+        src/overlap_volume.cpp)
 
 # Include directories
 target_include_directories(Pong

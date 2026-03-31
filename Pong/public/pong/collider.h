@@ -27,6 +27,11 @@ using CollisionCallback = std::function<void(AuroraEngine::TransformComponent co
 class Collider
 {
 public:
+    enum class ECollisionType
+    {
+        Block,
+    };
+
     Collider()
         : m_owner(nullptr)
     {
@@ -38,7 +43,7 @@ public:
     {
     }
 
-    [[nodiscard]] SDL_FRect get_collider() const
+    SDL_FRect get_collider() const
     {
         SDL_FRect extents{};
         if (m_owner)
@@ -54,9 +59,9 @@ public:
         return extents;
     }
 
-    [[nodiscard]] AuroraEngine::GameObject* get_owner() const { return m_owner; }
+    AuroraEngine::GameObject* get_owner() const { return m_owner; }
 
-    [[nodiscard]] bool is_dynamic() const { return m_is_dynamic; }
+    bool is_dynamic() const { return m_is_dynamic; }
 
     void register_collision_response(CollisionCallback&& collision_response)
     {

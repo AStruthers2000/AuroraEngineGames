@@ -9,6 +9,7 @@
 
 #include "aurora_engine_public.h"
 #include "better_game_object.h"
+#include "overlap_volume.h"
 
 struct PlayerSpecification
 {
@@ -35,6 +36,14 @@ struct WallSpecification
     int update_order;
 };
 
+struct OverlapSpecification
+{
+    glm::vec2 position;
+    glm::vec2 scale;
+    OverlapVolume::EOverlapPosition overlap_position;
+    int update_order;
+};
+
 class GameMode : public AuroraEngine::GameObject
 {
 public:
@@ -53,11 +62,15 @@ public:
     void spawn_player(PlayerSpecification const& player_spec);
     void spawn_ball(BallSpecification const& ball_spec);
     void spawn_wall(WallSpecification const& wall_spec);
+    void spawn_overlap(OverlapSpecification const& overlap_spec);
+    std::vector<OverlapVolume*>& get_overlap_volumes() { return m_overlap_volumes; }
 
 private:
     void resolve_all_collision();
     void resolve_collision(BetterGameObject* dynamic, BetterGameObject* other, SDL_FRect const& overlap);
 
     std::vector<BetterGameObject*> m_managed_objects;
+    std::vector<OverlapVolume*> m_overlap_volumes;
+
 };
 #endif //PONG_GAME_MODE_H

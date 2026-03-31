@@ -1,12 +1,7 @@
 #include "aurora_engine_public.h"
 
-#include "pong/wall.h"
-#include "pong/ball.h"
-#include "pong/player.h"
 #include "pong/field.h"
 #include "pong/game_mode.h"
-
-#include <glm/gtc/random.hpp>
 
 #include <array>
 #include <random>
@@ -19,9 +14,9 @@ using namespace AuroraEngine;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 constexpr WindowSpecification window_spec
 {
-        .window_size = {1628, 1074},
-        .logical_size = {1628, 1074},
-        .title = "Pong",
+    .window_size = {1628, 1074},
+    .logical_size = {1628, 1074},
+    .title = "Pong",
 };
 
 constexpr glm::vec2 mid_screen = window_spec.window_size / 2.f;
@@ -42,37 +37,66 @@ std::vector<WallSpecification> wall_specs
         .scale = {window_spec.window_size.x, wall_thickness},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // top wall
     {
         .position = {0.f, window_spec.window_size.y - wall_thickness},
         .scale = {window_spec.window_size.x, wall_thickness},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // bottom wall
     {
         .position = {0.f, 0.f},
         .scale = {wall_thickness, 235.f},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // top-left wall
     {
-        .position = {0.f, window_spec.window_size.y - 233.f},
-        .scale = {wall_thickness, 233.f},
+        .position = {0.f, window_spec.window_size.y - 234.f},
+        .scale = {wall_thickness, 234.f},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // bottom-left wall
     {
         .position = {window_spec.window_size.x - wall_thickness, 0.f},
         .scale = {wall_thickness, 235.f},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // top-right wall
     {
-        .position = {window_spec.window_size.x - wall_thickness, window_spec.window_size.y - 233.f},
-        .scale = {wall_thickness, 233.f},
+        .position = {window_spec.window_size.x - wall_thickness, window_spec.window_size.y - 234.f},
+        .scale = {wall_thickness, 234.f},
         .color = wall_color,
         .elasticity = wall_elasticity,
+        .update_order = wall_update_order,
     }, // bottom-right wall
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// Overlap info
+////////////////////////////////////////////////////////////////////////////////////////////////////
+constexpr float overlap_extra = 100.f;
+constexpr int overlap_update_order = 100;
+
+std::vector<OverlapSpecification> overlap_specs
+{
+    {
+        .position = {0.f - overlap_extra, 234.f - overlap_extra},
+        .scale = {overlap_extra, 607.f + (overlap_extra * 2)},
+        .overlap_position = OverlapVolume::EOverlapPosition::LeftSide,
+        .update_order = overlap_update_order,
+    },
+    {
+        .position = {window_spec.window_size.x, 234.f - overlap_extra},
+        .scale = {overlap_extra, 607.f + (overlap_extra * 2)},
+        .overlap_position = OverlapVolume::EOverlapPosition::RightSide,
+        .update_order = overlap_update_order,
+    },
 };
 
 
@@ -88,6 +112,7 @@ BallSpecification ball_specs
     .position = mid_screen,
     .radius = ball_radius,
     .color = ball_color,
+    .update_order = ball_update_order,
 };
 
 
@@ -97,6 +122,24 @@ BallSpecification ball_specs
 constexpr SDL_Color player_color{215, 201, 170, 255};
 constexpr glm::vec2 player_size{25.f, 100.f};
 constexpr int player_update_order = 1;
+
+PlayerSpecification player1
+{
+    .position = glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)},
+    .size = player_size,
+    .color = player_color,
+    .player_num = 1,
+    .update_order = player_update_order,
+};
+
+PlayerSpecification player2
+{
+    .position = glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)},
+    .size = player_size,
+    .color = player_color,
+    .player_num = 2,
+    .update_order = player_update_order,
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,26 +182,16 @@ int main()
         game_mode->spawn_wall(spec);
     }
 
+    // Create all overlaps
+    for (auto const& spec : overlap_specs)
+    {
+        game_mode->spawn_overlap(spec);
+    }
+
+    // Create ball
     game_mode->spawn_ball(ball_specs);
 
-    PlayerSpecification player1
-    {
-        .position = glm::vec2{wall_thickness * 2, mid_screen.y - (player_size.y / 2.f)},
-        .size = player_size,
-        .color = player_color,
-        .player_num = 1,
-        .update_order = player_update_order,
-    };
-
-    PlayerSpecification player2
-    {
-        .position = glm::vec2{window_spec.window_size.x - (wall_thickness * 2) - player_size.x, mid_screen.y - (player_size.y / 2.f)},
-        .size = player_size,
-        .color = player_color,
-        .player_num = 2,
-        .update_order = player_update_order,
-    };
-
+    // Create players
     game_mode->spawn_player(player1);
     game_mode->spawn_player(player2);
 

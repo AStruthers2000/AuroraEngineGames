@@ -15,8 +15,8 @@
 class Ball : public BetterGameObject
 {
 public:
-    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, float radius, SDL_Color const& color/*, WallManager* wall_manager, std::vector<Player*> players*/)
-        : BetterGameObject(owning_world, initial_transform, true)
+    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, GameMode& owning_mode, float radius, SDL_Color const& color/*, WallManager* wall_manager, std::vector<Player*> players*/)
+        : BetterGameObject(owning_world, initial_transform, owning_mode, true)
         , m_spawn_transform(initial_transform)
         , m_color(color)
     {

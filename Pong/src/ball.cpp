@@ -1,5 +1,6 @@
 #include "pong/ball.h"
 #include "pong/wall.h"
+#include "pong/game_mode.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/random.hpp>
@@ -62,6 +63,15 @@ void Ball::initialize()
             get_transform().set_velocity(get_transform().get_velocity() * elasticity);
         }
     });
+
+    auto& overlaps = get_game_mode().get_overlap_volumes();
+    for (auto overlap : overlaps)
+    {
+        overlap->register_collision_response(this, [this](OverlapVolume* volume)
+        {
+            printf("Ball has been scored!!!\n");
+        });
+    }
 }
 
 void Ball::update(float delta_time)

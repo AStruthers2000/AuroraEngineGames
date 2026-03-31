@@ -14,8 +14,8 @@ class WallManager;
 class Player : public BetterGameObject
 {
 public:
-    Player(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, SDL_Color const& color, /*WallManager& wall_manager, */int player_num)
-        : BetterGameObject(owning_world, initial_transform, true)
+    Player(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, GameMode& owning_mode, SDL_Color const& color, /*WallManager& wall_manager, */int player_num)
+        : BetterGameObject(owning_world, initial_transform, owning_mode, true)
         , m_color(color)
         , m_player_num(player_num)
     {
@@ -27,7 +27,7 @@ public:
     void update(float delta_time) override;
     void render(SDL_Renderer* renderer) override;
     void cleanup() override;
-    [[nodiscard]] float get_elasticity() const { return m_elasticity; }
+    float get_elasticity() const { return m_elasticity; }
 
 private:
     SDL_Color m_color;
