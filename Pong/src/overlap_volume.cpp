@@ -1,5 +1,6 @@
 #include "pong/overlap_volume.h"
 #include "pong/better_game_object.h"
+#include "pong/game_mode.h"
 
 void OverlapVolume::initialize()
 {
@@ -21,6 +22,14 @@ void OverlapVolume::update(float delta_time)
             if (check_for_overlap(registrant_ptr.get()))
             {
                 response(this);
+                if (m_overlap_side == EOverlapPosition::LeftSide)
+                {
+                    m_game_mode.score_goal(2);
+                }
+                else if (m_overlap_side == EOverlapPosition::RightSide)
+                {
+                    m_game_mode.score_goal(1);
+                }
             }
         }
     }

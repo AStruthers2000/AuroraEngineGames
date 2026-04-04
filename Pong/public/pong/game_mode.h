@@ -65,6 +65,8 @@ public:
     void spawn_overlap(OverlapSpecification const& overlap_spec);
     std::vector<std::weak_ptr<OverlapVolume>>& get_overlap_volumes() { return m_overlap_volumes; }
 
+    void score_goal(int player_that_scored);
+
 private:
     void resolve_all_collision();
     void resolve_collision(BetterGameObject* dynamic, BetterGameObject* other, SDL_FRect const& overlap);
@@ -72,5 +74,12 @@ private:
     std::vector<std::weak_ptr<BetterGameObject>> m_managed_objects;
     std::vector<std::weak_ptr<OverlapVolume>> m_overlap_volumes;
 
+    int m_player_1_points{ 0 };
+    int m_player_2_points{ 0 };
+    BallSpecification m_last_spawned_ball_specs;
+    std::uint64_t m_last_scored_time{ std::numeric_limits<std::int64_t>::max() };
+    static constexpr float SPAWN_BALL_WAIT_TIME{ 1.75f };
+
+    bool m_debug_mode{ false };
 };
 #endif //PONG_GAME_MODE_H

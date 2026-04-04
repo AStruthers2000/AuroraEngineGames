@@ -99,15 +99,10 @@ void Ball::render(SDL_Renderer *renderer)
 
     SDL_SetRenderDrawColor(renderer, m_color.r, m_color.g, m_color.b, m_color.a);
     SDL_RenderFillRect(renderer, &dst);
-
-    SDL_FRect collider = get_collider();
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderRect(renderer, &collider);
 }
 
 void Ball::cleanup()
 {
-    printf("Ball has been destroyed\n");
 }
 
 void Ball::clamp_velocity()
@@ -126,6 +121,5 @@ void Ball::clamp_velocity()
 glm::vec2 Ball::random_vector()
 {
     glm::vec2 random_vel = glm::circularRand(1.f) * glm::linearRand(500.f, 1000.f);
-//    glm::vec2 random_vel = glm::circularRand(1.f) * glm::linearRand(50.f, 100.f);
     return random_vel;
 }
