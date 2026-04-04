@@ -25,9 +25,9 @@ void GameMode::cleanup()
 
 void GameMode::spawn_player(PlayerSpecification const& player_spec)
 {
-    std::unique_ptr<Player> player = std::make_unique<Player>(get_world(), player_spec.position, *this, player_spec.color, player_spec.player_num);
+    std::shared_ptr<Player> player = std::make_unique<Player>(get_world(), player_spec.position, *this, player_spec.color, player_spec.player_num);
     player->get_transform().set_scale(player_spec.size);
-    m_managed_objects.push_back(player.get());
+    m_managed_objects.push_back(player);
     get_world().add_object(std::move(player), player_spec.update_order);
 }
 
@@ -36,23 +36,23 @@ void GameMode::spawn_ball(BallSpecification const& ball_spec)
     AuroraEngine::TransformComponent spawn_location{ ball_spec.position };
     spawn_location.update_position(glm::vec2(-ball_spec.radius, -ball_spec.radius));
 
-    std::unique_ptr<Ball> ball = std::make_unique<Ball>(get_world(), spawn_location, *this, ball_spec.radius, ball_spec.color);
-    m_managed_objects.push_back(ball.get());
+    std::shared_ptr<Ball> ball = std::make_unique<Ball>(get_world(), spawn_location, *this, ball_spec.radius, ball_spec.color);
+    m_managed_objects.push_back(ball);
     get_world().add_object(std::move(ball), ball_spec.update_order);
 }
 
 void GameMode::spawn_wall(const WallSpecification &wall_spec)
 {
-    std::unique_ptr<Wall> wall = std::make_unique<Wall>(get_world(), AuroraEngine::TransformComponent(wall_spec.position), *this, wall_spec.scale, wall_spec.color, wall_spec.elasticity);
-    m_managed_objects.push_back(wall.get());
+    std::shared_ptr<Wall> wall = std::make_shared<Wall>(get_world(), AuroraEngine::TransformComponent(wall_spec.position), *this, wall_spec.scale, wall_spec.color, wall_spec.elasticity);
+    m_managed_objects.push_back(wall);
     get_world().add_object(std::move(wall), wall_spec.update_order);
 }
 
 void GameMode::spawn_overlap(const OverlapSpecification &overlap_spec)
 {
-    std::unique_ptr<OverlapVolume> overlap = std::make_unique<OverlapVolume>(get_world(), AuroraEngine::TransformComponent(overlap_spec.position), *this, overlap_spec.overlap_position);
+    std::shared_ptr<OverlapVolume> overlap = std::make_unique<OverlapVolume>(get_world(), AuroraEngine::TransformComponent(overlap_spec.position), *this, overlap_spec.overlap_position);
     overlap->get_transform().set_scale(overlap_spec.scale);
-    m_overlap_volumes.push_back(overlap.get());
+    m_overlap_volumes.push_back(overlap);
     get_world().add_object(std::move(overlap), overlap_spec.update_order);
 }
 
@@ -60,11 +60,14 @@ void GameMode::resolve_all_collision()
 {
     // Cache all colliders at the beginning
     std::unordered_map<BetterGameObject*, SDL_FRect> colliders;
-    for (auto* object : m_managed_objects)
+    for (auto const& object : m_managed_objects)
     {
-        if (object && object->get_object_state() == EGameObjectState::Active)
+        if (auto object_ptr = object.lock())
         {
-            colliders.emplace(object, object->get_collider());
+            if (object_ptr->get_object_state() == EGameObjectState::Active)
+            {
+                colliders.emplace(object_ptr.get(), object_ptr->get_collider());
+            }
         }
     }
 

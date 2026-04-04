@@ -65,13 +65,20 @@ void Ball::initialize()
     });
 
     auto& overlaps = get_game_mode().get_overlap_volumes();
-    for (auto overlap : overlaps)
+    for (auto const& overlap : overlaps)
     {
-        overlap->register_collision_response(this, [this](OverlapVolume* volume)
+        if (auto overlap_ptr = overlap.lock())
         {
-            printf("Ball has been scored!!!\n");
-            this->destroy();
-        });
+            std::weak_ptr<BetterGameObject> weak_this = weak_from_this();
+            overlap_ptr->register_collision_response(weak_this, [weak_this](OverlapVolume *volume)
+            {
+                printf("Ball has been scored!!!\n");
+                if (auto this_ptr = weak_this.lock())
+                {
+                    this_ptr->destroy();
+                }
+            });
+        }
     }
 }
 

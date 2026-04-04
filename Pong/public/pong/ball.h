@@ -12,10 +12,10 @@
 #include "better_game_object.h"
 #include "player.h"
 
-class Ball : public BetterGameObject
+class Ball : public BetterGameObject, public std::enable_shared_from_this<Ball>
 {
 public:
-    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, GameMode& owning_mode, float radius, SDL_Color const& color/*, WallManager* wall_manager, std::vector<Player*> players*/)
+    Ball(AuroraEngine::GameWorld& owning_world, AuroraEngine::TransformComponent const& initial_transform, GameMode& owning_mode, float radius, SDL_Color const& color)
         : BetterGameObject(owning_world, initial_transform, owning_mode, true)
         , m_spawn_transform(initial_transform)
         , m_color(color)

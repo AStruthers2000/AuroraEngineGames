@@ -9,6 +9,7 @@
 
 #include "aurora_engine_public.h"
 
+#include <map>
 #include <functional>
 
 class BetterGameObject;
@@ -43,7 +44,7 @@ public:
     void render(SDL_Renderer* renderer) override;
     void cleanup() override;
 
-    void register_collision_response(BetterGameObject* registrant, OverlapCallback&& overlap_response);
+    void register_collision_response(const std::weak_ptr<BetterGameObject>& registrant, OverlapCallback&& overlap_response);
 
 private:
     bool check_for_overlap(BetterGameObject const* other);
@@ -51,7 +52,7 @@ private:
     GameMode& m_game_mode;
     SDL_FRect my_volume{};
     EOverlapPosition m_overlap_side{ EOverlapPosition::None };
-    std::unordered_map<BetterGameObject*, OverlapCallback> m_registered_game_objects{};
+    std::map<std::weak_ptr<BetterGameObject>, OverlapCallback, std::owner_less<std::weak_ptr<BetterGameObject>>> m_registered_game_objects;
 };
 
 #endif //PONG_OVERLAP_VOLUME_H

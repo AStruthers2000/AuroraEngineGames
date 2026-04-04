@@ -63,14 +63,14 @@ public:
     void spawn_ball(BallSpecification const& ball_spec);
     void spawn_wall(WallSpecification const& wall_spec);
     void spawn_overlap(OverlapSpecification const& overlap_spec);
-    std::vector<OverlapVolume*>& get_overlap_volumes() { return m_overlap_volumes; }
+    std::vector<std::weak_ptr<OverlapVolume>>& get_overlap_volumes() { return m_overlap_volumes; }
 
 private:
     void resolve_all_collision();
     void resolve_collision(BetterGameObject* dynamic, BetterGameObject* other, SDL_FRect const& overlap);
 
-    std::vector<BetterGameObject*> m_managed_objects;
-    std::vector<OverlapVolume*> m_overlap_volumes;
+    std::vector<std::weak_ptr<BetterGameObject>> m_managed_objects;
+    std::vector<std::weak_ptr<OverlapVolume>> m_overlap_volumes;
 
 };
 #endif //PONG_GAME_MODE_H

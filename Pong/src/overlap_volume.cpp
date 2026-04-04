@@ -16,11 +16,19 @@ void OverlapVolume::update(float delta_time)
 {
     for (auto const& [registrant, response] : m_registered_game_objects)
     {
-        if (registrant && registrant->get_object_state() == EGameObjectState::Active && check_for_overlap(registrant))
+        if (auto registrant_ptr = registrant.lock())
         {
-            response(this);
+            if (check_for_overlap(registrant_ptr.get()))
+            {
+                response(this);
+            }
         }
     }
+
+    std::erase_if(m_registered_game_objects, [](auto const& pair)
+    {
+       return pair.first.expired();
+    });
 }
 
 void OverlapVolume::render(SDL_Renderer *renderer)
@@ -34,7 +42,7 @@ void OverlapVolume::cleanup()
 
 }
 
-void OverlapVolume::register_collision_response(BetterGameObject *registrant, OverlapCallback &&overlap_response)
+void OverlapVolume::register_collision_response(const std::weak_ptr<BetterGameObject>& registrant, OverlapCallback &&overlap_response)
 {
     m_registered_game_objects.try_emplace(registrant, std::move(overlap_response));
 }
